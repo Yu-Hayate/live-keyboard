@@ -42,7 +42,11 @@ namespace LiveKeyboard {
         keyRepeatTimeouts[key] = 0;
         keyRepeatIntervals[key] = 0;
     });
-
+    /**
+     * Gets the currently pressed keys
+     */
+    //% block="get pressed keys"
+    //% group="keys"
     export function currentKeys(): string[] {
         const pressed = Object.keys(allKeys).filter(name => allKeys[name].isPressed());
         const modifierPriority = MODIFIERS;
@@ -56,7 +60,11 @@ namespace LiveKeyboard {
             return a < b ? -1 : a > b ? 1 : 0;
         });
     }
-
+    /**
+     * gets newly pressed keys
+     */
+    //% block="get newly pressed keys"
+    //% group="keys"
     export function newlyPressedKeys(): string[] {
         const currentPressed = currentKeys();
         const newlyPressed: string[] = [];
@@ -131,9 +139,7 @@ namespace LiveKeyboard {
         }
     }
 
-    /**
-     * Finds the next word boundary position from the given position
-     */
+
     function findNextWordBoundary(pos: number, forward: boolean = true): number {
         if (forward) {
             let i = pos;
@@ -147,10 +153,6 @@ namespace LiveKeyboard {
             return i;
         }
     }
-
-    /**
-     * Checks if a character is part of a word (alphanumeric or underscore)
-     */
     function isWordChar(char: string): boolean {
         if (char.length !== 1) return false;
         if (char >= 'A' && char <= 'Z') return true;
@@ -160,9 +162,6 @@ namespace LiveKeyboard {
         return false;
     }
 
-    /**
-     * Starts or extends a selection
-     */
     function startOrExtendSelection(newPos: number) {
         if (!hasSelection) {
             selectionAnchor = cursorPosition;
@@ -178,9 +177,6 @@ namespace LiveKeyboard {
         cursorPosition = newPos;
     }
 
-    /**
-     * Clears selection and moves cursor
-     */
     function clearSelectionAndMoveTo(newPos: number) {
         hasSelection = false;
         selectionStart = 0;
@@ -534,14 +530,17 @@ namespace LiveKeyboard {
         }
         startOrExtendSelection(prevBoundary);
     }
-
+    /**
+     * Gets the currently typed text
+     */
+    //% block="get typed text"
     export function getTypedString(): string {
         if (cursorPosition > typedString.length) {
             cursorPosition = typedString.length;
         }
         return typedString;
     }
-
+    
     export function getCursorInfo(): { cursor: number, hasSelection: boolean, selectedText: string, selectionStart: number, selectionEnd: number } {
         let selectedText = "";
         if (hasSelection) {
@@ -558,18 +557,28 @@ namespace LiveKeyboard {
             selectionEnd: selectionEnd
         };
     }
-
+    /**
+     * Sets the position of the cursor inside of the typed string
+     */
+    //% block="set cursor position to $position"
     export function setCursorPosition(position: number) {
         cursorPosition = Math.max(0, Math.min(position, typedString.length));
         hasSelection = false;
         selectionStart = 0;
         selectionEnd = 0;
     }
-
+    /**
+     * Moves the cursor by a delta
+     * `CursorPosition += delta`
+     */
+    //% block="move cursor position by $delta"
     export function moveCursor(delta: number) {
         setCursorPosition(cursorPosition + delta);
     }
-
+    /**
+     * sets the selection start and end
+     */
+    //% block="set Selection start $start and end $end"
     export function setSelection(start: number, end: number) {
         start = Math.max(0, Math.min(start, typedString.length));
         end = Math.max(0, Math.min(end, typedString.length));
@@ -580,7 +589,10 @@ namespace LiveKeyboard {
         cursorPosition = end;
         selectionAnchor = start;
     }
-
+    /**
+     * clear the typed text
+     */
+    //% block="clear typed text"
     export function clearTypedString() {
         typedString = "";
         cursorPosition = 0;
@@ -592,7 +604,11 @@ namespace LiveKeyboard {
         historyIndex = 0;
         saveToHistory();
     }
-
+    /**
+     * select all of the typed text
+     */
+    //% block="select all"
+    //% group="Selection"
     export function selectAll() {
         if (typedString.length > 0) {
             selectionStart = 0;
@@ -602,7 +618,11 @@ namespace LiveKeyboard {
             selectionAnchor = 0;
         }
     }
-
+    /**
+     * delete the current selection
+     */
+    //% block="delete Selection"
+    //% group="Selection"
     export function deleteSelection() {
         if (hasSelection) {
             const start = Math.min(selectionStart, selectionEnd);
@@ -615,7 +635,11 @@ namespace LiveKeyboard {
             selectionAnchor = 0;
         }
     }
-
+    /**
+     * undo the last recorded change
+     */
+    //% block="undo"
+    //% group="Selection"
     export function undo() {
         if (historyIndex > 0) {
             historyIndex--;
@@ -627,7 +651,11 @@ namespace LiveKeyboard {
             selectionAnchor = 0;
         }
     }
-
+    /**
+     * redo the last recorded change
+     */
+    //% block="redo"
+    //% group="Selection"
     export function redo() {
         if (historyIndex < history.length - 1) {
             historyIndex++;
@@ -639,7 +667,13 @@ namespace LiveKeyboard {
             selectionAnchor = 0;
         }
     }
-
+    /**
+     * Converts a list of keys into a keybind
+     * idk what the use could be but its here if you need it
+     */
+    //% block="convert Keys into keybind $keybind"
+    //% keybind.defl=["shift","A"]
+    //% group="keys"
     export function convertKeybind(keybind: string[]): string {
         if (keybind.length === 0) return "";
         if (keybind.length === 1 && keybind[0].length === 1) return keybind[0].toLowerCase();
@@ -658,7 +692,14 @@ namespace LiveKeyboard {
         info += `\nClipboard: "${clipboard}"`;
         return info;
     }
-
+    /**
+     * Starts processing input and runs a callback when the typed string updates.
+     * @param handler a function that receives the current typed string.
+     */
+    //% block="on typed key updates $str"
+    //% str.defl=str
+    //% str.shadow=variable_get
+    //% draggableParameters
     export function startKeyLogging(handler: (str: string) => void): void {
         game.onUpdate(processKeyBuffer);
         game.onUpdateInterval(100, function () {
@@ -666,13 +707,19 @@ namespace LiveKeyboard {
             handler(typed);
         });
     }
-
+    /**
+     *  Enable menu to reset the typed text
+     */
+    //% block="enable menu button to reset typed text"
     export function enableClearButton(): void {
         controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
             clearTypedString();
         });
     }
-
+    /**
+     *  Gets the cursor's position
+     */
+    //% block="Get current cursor position"
     export function getCursorPosition() {
         return cursorPosition;
     }
