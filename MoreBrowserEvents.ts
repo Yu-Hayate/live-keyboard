@@ -35,15 +35,13 @@ namespace LiveKeyboard {
     let keyRepeatTimeouts: { [key: string]: number } = {};
     let keyRepeatIntervals: { [key: string]: number } = {};
 
-    (function initKeyStates() {
-        Object.keys(allKeys).forEach(key => {
-            keymap.setSystemKeys(0, 0, 0, 0)
-            previousKeyStates[key] = false;
-            repeatingKeys[key] = false;
-            keyRepeatTimeouts[key] = 0;
-            keyRepeatIntervals[key] = 0;
-        });
-    })();
+    keymap.setSystemKeys(0, 0, 0, 0)
+    Object.keys(allKeys).forEach(key => {
+        previousKeyStates[key] = false;
+        repeatingKeys[key] = false;
+        keyRepeatTimeouts[key] = 0;
+        keyRepeatIntervals[key] = 0;
+    });
 
     export function currentKeys(): string[] {
         const pressed = Object.keys(allKeys).filter(name => allKeys[name].isPressed());
@@ -132,7 +130,6 @@ namespace LiveKeyboard {
             }
         }
     }
-
 
     /**
      * Finds the next word boundary position from the given position
@@ -410,7 +407,6 @@ namespace LiveKeyboard {
         return "";
     }
 
-
     let clipboard = "";
 
     /**
@@ -475,7 +471,6 @@ namespace LiveKeyboard {
         clipboard = text;
     }
 
-
     /**
      * Selects the word at the current cursor position
      */
@@ -539,7 +534,6 @@ namespace LiveKeyboard {
         }
         startOrExtendSelection(prevBoundary);
     }
-
 
     export function getTypedString(): string {
         if (cursorPosition > typedString.length) {
