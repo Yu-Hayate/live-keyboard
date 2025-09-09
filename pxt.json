@@ -11,7 +11,8 @@
         "README.md",
         "assets.json",
         "MoreBrowserEvents.ts",
-        "test.ts"
+        "test.ts",
+        "todo.md"
     ],
     "testFiles": [
         "test.ts"
@@ -23,5 +24,5 @@
     "supportedTargets": [
         "arcade"
     ],
-    "preferredEditor": "tsprj"
+    "preferredEditor": "blocksprj"
 }
